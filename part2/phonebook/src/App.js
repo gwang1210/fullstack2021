@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+import axios from 'axios'
 
 const Persons = ({persons}) => {
   return (
@@ -14,12 +15,7 @@ const Person = ({person}) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas',
-      id: 1,
-      number: '777-777-7777'
-    }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
@@ -50,10 +46,19 @@ const App = () => {
     event.preventDefault()
     setFilter(event.target.value)
     setIsFiltered(filter)
-  }
+  } 
+  const personsToShow = isFiltered ? 
+    persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())) : persons
 
-  const personsToShow = isFiltered 
-    ? persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase())) : persons
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
 
   return (
     <div>
